@@ -1,0 +1,15 @@
+{
+  "name": "JIRA+",
+  "version": "0.1",
+  "description": "Navigation enhancements for Atlassian JIRA",
+  "browser_action": {
+    "default_icon": "page_icon.png"
+  },
+  "content_scripts": [
+    {
+		"matches": [ "http://sandbox.onjira.com/*", "https://crm.virgo.hu/*" ],
+		"js": ["jquery-1.4.2.min.js", "jira.js"],
+		"css": ["jira.css"]
+	 }
+  ]
+}
