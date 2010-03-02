@@ -22,10 +22,15 @@ function init() {
         move(-1);
         break;
       case 13: //enter
-        activate(pos);
+        activate();
         break;
       case 85: //u
         up();
+        break;
+      case 67: //ctrl + c
+        if(event.ctrlKey) {
+          copy();
+        }
         break;
       }
     }
@@ -43,7 +48,7 @@ function move(dir) {
   scrollTo(issues[pos]);
 }
 
-function activate(pos) {
+function activate() {
   if(pos > -1) {
     $('td.issuekey a',issues[pos]).first().each(activateLink);
   }
@@ -63,6 +68,23 @@ function scrollTo(element) {
 function up() {
   //try "return to search" or "browse project"
   $('a[accesskey=F], a[accesskey=b]').last().each(activateLink);
+}
+
+function copy() {
+  if(pos > -1) {
+    //TODO: save and restore original selection, if any
+    var selection = window.getSelection();
+    var range = document.createRange();    
+    var summaryNode = $('td.summary a',issues[pos])[0];
+    range.setStart($('td.issuekey a',issues[pos])[0], 0);
+    range.setEnd(summaryNode, summaryNode.childNodes.length);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.execCommand("Copy"); 
+    selection.removeAllRanges();
+    //do some feedback
+    $(issues[pos]).fadeTo('fast', 0, function(){$(this).fadeTo('fast',1);});
+  }
 }
 
 function activateLink() {
