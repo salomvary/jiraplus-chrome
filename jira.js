@@ -13,7 +13,8 @@ function init() {
   }
   $(document).keydown(function(event) {
     console.log(event.which);
-    switch(event.which) {
+   if(['INPUT', 'TEXTAREA'].indexOf(event.target.nodeName) == -1) {
+     switch(event.which) {
       case 74: //j
         move(1);
         break;
@@ -26,18 +27,19 @@ function init() {
       case 85: //u
         up();
         break;
+      }
     }
   });
 }
 
 function move(dir) {
-	if(pos < 0) {
-		pos = 0;
-	} else {
-		$(issues[pos]).removeClass('jirahl');
+  if(pos < 0) {
+    pos = 0;
+  } else {
+    $(issues[pos]).removeClass('jirahl');
     pos = Math.max(0, Math.min(pos + dir, issues.length - 1));
-	}
-	$(issues[pos]).addClass('jirahl');
+  }
+  $(issues[pos]).addClass('jirahl');
   scrollTo(issues[pos]);
 }
 
