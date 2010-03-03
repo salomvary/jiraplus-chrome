@@ -16,19 +16,27 @@ function init() {
    if(['INPUT', 'TEXTAREA'].indexOf(event.target.nodeName) == -1) {
      switch(event.which) {
       case 74: //j
-        move(1);
+		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+          move(1);
+        }
         break;
       case 75: //k
-        move(-1);
+		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+          move(-1);
+        }
         break;
       case 13: //enter
-        activate();
+		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+          activate();
+        }
         break;
       case 85: //u
-        up();
+		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+          up();
+        }
         break;
       case 67: //ctrl + c
-        if(event.ctrlKey) {
+        if(event.ctrlKey && !(event.shiftKey || event.altKey || event.metaKey)) {
           copy();
         }
         break;
