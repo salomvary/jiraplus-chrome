@@ -5,7 +5,7 @@ init();
 
 function init() {
   pos = -1;
-  issues = $('#issuetable tr:has(td.issuekey)');
+  issues = $('#issuetable tr:has(td.issuekey), tr.rowNormal:has(a[href^=/browse/]), tr.rowAlternate:has(a[href^=/browse/])');
   if(! issues) {
     console.log('no issues were found');    
   } else {
@@ -50,7 +50,7 @@ function move(dir) {
 
 function activate() {
   if(pos > -1) {
-    $('td.issuekey a',issues[pos]).first().each(activateLink);
+    $('td.issuekey a, td a[href^=/browse/]',issues[pos]).first().each(activateLink);
   }
 }
 
@@ -75,8 +75,8 @@ function copy() {
     //TODO: save and restore original selection, if any
     var selection = window.getSelection();
     var range = document.createRange();    
-    var summaryNode = $('td.summary a',issues[pos])[0];
-    range.setStart($('td.issuekey a',issues[pos])[0], 0);
+    var summaryNode = $('td.summary a, td:nth-child(3) a[href^=/browse/]',issues[pos])[0];
+    range.setStart($('td.issuekey a, td:nth-child(2) a[href^=/browse/]',issues[pos])[0], 0);
     range.setEnd(summaryNode, summaryNode.childNodes.length);
     selection.removeAllRanges();
     selection.addRange(range);
