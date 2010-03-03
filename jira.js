@@ -36,7 +36,7 @@ function init() {
         }
         break;
       case 67: //ctrl + c
-        if(event.ctrlKey && !(event.shiftKey || event.altKey || event.metaKey)) {
+        if(event.ctrlKey && !(event.shiftKey || event.altKey)) {
           copy();
         }
         break;
