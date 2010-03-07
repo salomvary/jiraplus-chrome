@@ -5,3 +5,33 @@
   background: transparent;
 }
 
+body.jirainfobar {
+  padding-top: 22px;
+}
+
+#jirainfobar{
+  position: fixed;  
+  display: none;
+  height: 21px;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  border-bottom: 1px solid #808080;
+  background: #d7fe65;
+  font-family: Verdana, sans-serif;
+  font-size: 12px;
+  line-height: 21px;
+  padding: 0 3px;
+  text-align: right;
+}
+#jirainfobar .summary{
+  text-decoration: none;
+}
+#jirainfobar .time{
+  font-weight: bold;
+}
+
+.jirainfobar #jirainfobar{
+  display: block;
+}
+

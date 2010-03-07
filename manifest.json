@@ -5,10 +5,11 @@
   "browser_action": {
     "default_icon": "page_icon.png"
   },
+  "background_page": "background.html",
   "content_scripts": [
     {
 		"matches": [ "http://sandbox.onjira.com/*", "https://crm.virgo.hu/*" ],
-		"js": ["jquery-1.4.2.min.js", "jira.js"],
+		"js": ["jquery-1.4.2.min.js", "jquery.util.js", "jira.js"],
 		"css": ["jira.css"]
 	 }
   ]
