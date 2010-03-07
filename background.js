@@ -14,25 +14,41 @@ var command = {
 var log = {
   entries: [],
   start: function(issue){
-    log.running = setInterval(log.tick, 1000);
-    var entry = new LogEntry(issue);
-    log.entries.push(entry);
-    return entry;
-
+    if(log.active) {
+      log.stop();
+    }
+    console.log('log started', issue.key);
+    log.active = new LogEntry(issue);
+    log._tick = setInterval(log.tick, 1000);
+    log._store = setInterval(log.store, 2000); //FIXME set to ~1m in production
+    return log.active;
   },
   stop: function() {
-    clearInterval(log.running);
-    log.running = false;
-    var entry = log.entries.last();
-    console.log('complete time: ' + entry.formatTime(), entry);
+    console.log('log stopped',log.active.key,log.active.formatTime());
+    clearInterval(log._tick);
+    clearInterval(log._store);
+    log.entries.push(log.active);
+    log.active = undefined;
+    log.store();
   },
   tick: function() {
-    log.entries.last().tick();
+    log.active.tick();
+  },
+  store: function() {
+    //FIXME handle localStorage errors (e.g quota proglems)
+    var db = localStorage.entries ? JSON.parse(localStorage.entries) : [];
+    //store history
+    while(log.entries.length > 0) {
+      db.push(log.entries.shift());
+    }
+    localStorage.entries = JSON.stringify(db);
+    //store active
+    if(log.active) {
+      localStorage.active = JSON.stringify(log.active);
+    } else {
+      localStorage.removeItem('active');
+    }
   }
-};
-
-log.entries.last = function() {
-  return this.length > 0 ? this[this.length - 1] : undefined;
 };
 
 var LogEntry = function(issue) {
