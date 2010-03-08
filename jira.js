@@ -13,7 +13,7 @@ function init() {
   }
   $(document).keydown(function(event) {
     console.log(event.which);
-   if(['INPUT', 'TEXTAREA'].indexOf(event.target.nodeName) == -1) {
+   if(['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'].indexOf(event.target.nodeName) == -1) {
      switch(event.which) {
       case 74: //j
 		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
