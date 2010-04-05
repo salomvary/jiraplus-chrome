@@ -1,14 +1,14 @@
-var issues;
+var jira = {};
 
-var selectors = {
+jira.selectors = {
   issues: '#issuetable tr:has(td.issuekey), tr.rowNormal:has(a[href^=/browse/]), tr.rowAlternate:has(a[href^=/browse/])',
   summary: 'td.summary a, td:nth-child(3) a[href^=/browse/]',
   issuekey: 'td.issuekey a, td:nth-child(2) a[href^=/browse/]'
 };
 
-function init() {
-  issues = $(selectors.issues);
-  issues.active = -1;
+jira.initialize = function() {
+  jira.issues = $(jira.selectors.issues);
+  jira.issues.active = -1;
 
   $(document).keydown(function(event) {
    console.log(event.which);
@@ -56,27 +56,27 @@ function init() {
 
 var command = {
   move: function(dir) {
-    if(issues.active < 0) {
-      issues.active = 0;
+    if(jira.issues.active < 0) {
+      jira.issues.active = 0;
     } else {
-      $(issues[issues.active]).removeClass('jirahl');
-      issues.active = Math.max(0, Math.min(issues.active + dir, issues.length - 1));
+      $(jira.issues[jira.issues.active]).removeClass('jirahl');
+      jira.issues.active = Math.max(0, Math.min(jira.issues.active + dir, jira.issues.length - 1));
     }
-    $(issues[issues.active]).addClass('jirahl');
-    util.scrollTo(issues[issues.active]);
+    $(jira.issues[jira.issues.active]).addClass('jirahl');
+    jira.util.scrollTo(jira.issues[jira.issues.active]);
   },
 
   up: function() {
     //try "return to search" or "browse project"
-    $('a[accesskey=F], a[accesskey=b]').last().each(util.activateLink);
+    $('a[accesskey=F], a[accesskey=b]').last().each(jira.util.activateLink);
   },
 
   copy: function(tr) {
     //TODO: save and restore original selection, if any
     var selection = window.getSelection();
     var range = document.createRange();    
-    var summaryNode = $(selectors.summary,tr)[0];
-    range.setStart($(selectors.issuekey,tr)[0], 0);
+    var summaryNode = $(jira.selectors.summary,tr)[0];
+    range.setStart($(jira.selectors.issuekey,tr)[0], 0);
     range.setEnd(summaryNode, summaryNode.childNodes.length);
     selection.removeAllRanges();
     selection.addRange(range);
@@ -87,12 +87,12 @@ var command = {
   },
 
   activate: function(tr) {
-    $(selectors.issuekey,tr).first().each(util.activateLink);
+    $(jira.selectors.issuekey,tr).first().each(jira.util.activateLink);
   },
 
   startLog: function(tr) {
-    var issue = util.parseIssue(tr);
-    port.postMessage({
+    var issue = jira.util.parseIssue(tr);
+    rpc.port.postMessage({
       cmd: "startLog", 
       issue: issue
     });
@@ -100,47 +100,23 @@ var command = {
   },
 
   stopLog: function() {
-    port.postMessage({cmd: "stopLog"});
+    rpc.port.postMessage({cmd: "stopLog"});
     bar.hide();
   },
   
   withActive: function(cmd) {
-    if(issues.active > -1) {
-      command[cmd](issues[issues.active]);
+    if(jira.issues.active > -1) {
+      command[cmd](jira.issues[jira.issues.active]);
     }
   }
 };
 
-//display bar at window top
-var bar = {
-  show: function(issue) {
-    if(! bar.element) {
-      $('body')
-        .prepend('<div id="jirainfobar"></div>');
-      bar.element = $('#jirainfobar');
-    }
-    bar.element.html(
-      '<a href="'+
-      issue.url+'" class="issuekey">'+
-      issue.key+'</a> | <a href="'+
-      issue.url+'" class="summary">'+
-      issue.summary+'</a> | <span class="time">'+
-      (issue.time ? issue.time : '00:00:00')+
-      '</span>');
-    $('body').addClass('jirainfobar');
-  },
-
-  hide: function() {
-    $('body').removeClass('jirainfobar');
-  }
-};
-
-var util = {
+jira.util = {
   parseIssue: function(tr) {
-    var key = $(selectors.issuekey, tr).eq(0);
+    var key = $(jira.selectors.issuekey, tr).eq(0);
     return {
       key: key.text().trim(),
-      summary: $(selectors.summary, tr).eq(0).text().trim(),
+      summary: $(jira.selectors.summary, tr).eq(0).text().trim(),
       url: key.attr('href')
     };
   },
@@ -159,11 +135,50 @@ var util = {
   }
 };
 
+//display bar at window top
+var bar = {
+  show: function(issue) {
+    if(! bar.element) {
+      $('body')
+        .prepend('<div id="jirainfobar"></div>');
+      bar.element = $('#jirainfobar');
+    }
+    bar.element.html(
+      '<a href="'+
+      issue.url+'" class="issuekey">'+
+      issue.key+'</a> | <a href="'+
+      issue.url+'" class="summary">'+
+      issue.summary+'</a> | <span class="time">'+
+      (issue.end ? util.formatTime(issue.end - issue.begin) : '00:00:00')+
+      '</span>');
+    $('body').addClass('jirainfobar');
+  },
+
+  hide: function() {
+    $('body').removeClass('jirainfobar');
+  }
+};
+
 //set up communication
-var port = chrome.extension.connect();
-port.onMessage.addListener(function(issue) {
-  bar.show(issue);
-});
+var rpc = {
+  port: chrome.extension.connect(),
+  onMessage: function(request) {
+    if(rpc.command[request.cmd]) {
+        rpc.command[request.cmd](request);
+    } else {
+      throw new Error('unknown command '+request.cmd);
+    }
+  },
+  command: {
+    startLog: function(request) {
+      bar.show(request.issue);
+    },
+    stopLog: function() {
+      bar.hide();
+    }
+  }
+};
+rpc.port.onMessage.addListener(rpc.onMessage);
 
 //start
-init();
+$(jira.initialize);
