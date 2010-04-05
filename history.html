@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <script src="jquery-1.4.2.min.js"></script>
+    <script src="common.js"></script>
+    <script src="history.js"></script>
+    <link rel="stylesheet" type="text/css" href="history.css"/>
+  </head>
+  <body>
+    <h1>Pending worklogs</h1>
+    <div id="logs">
+      <table>
+        <thead>
+          <tr>
+            <th>Issue</th>
+            <th>Summary</th>
+            <th>Start time</th>
+            <th>End time</th>
+            <th>Elapsed</th>
+            <th></th>
+          </tr>
+          <tr style="display:none" id="proto">
+            <td class="key"><a href=""></a></td>
+            <td class="summary"><a href=""></a></td>
+            <td class="begin"></td>
+            <td class="end"></td>
+            <td class="time"></td>
+            <td><button type="button" name="delete">delete</button>
+          </tr>
+        </thead>
+      </table>
+      <form name="login">
+        <fieldset style="display:none" id="login">
+          <legend>Login</legend>
+          <p><label>Username:<input type="text" name="username"/></label></p>
+          <p><label>Password:<input type="password" name="password"/></label></p>
+          <strong id="loginError" style="display:none"></strong>
+        </fieldset>
+      </form>
+      <p><button type="button" name="publish">Publish</button></p>
+    </div>
+    <p id="nologs">No entries pending</p>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+* add keyboard shortcuts:
+  * show history
+* prompt for configuration
+* validate jira url, keep only scheme and domain part
+* support sub-issues
+* support issue pages
+* stylesheets (options, history)
+* paging
+* mouse support
+* help
+
