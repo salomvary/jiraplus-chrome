@@ -2,11 +2,18 @@ var jira = {};
 
 jira.selectors = {
   //lists, dashboard
-  issues: '#issuetable tr:has(td.issuekey), tr.rowNormal:has(a[href^=/browse/]), tr.rowAlternate:has(a[href^=/browse/])',
-  //lists, dashboard, issue page (v4, v3)
-  summary: 'td.summary a, td:nth-child(3) a[href^=/browse/], #issue_header_summary a, h3.formtitle' ,
-  //lists, dashboard, issue page (v4, v3)
-  issuekey: 'td.issuekey a, td:nth-child(2) a[href^=/browse/], .breadcrumbs a#key-val, table#issuedetails a[href^=/browse/]'
+  issues:   '#issuetable tr:has(td.issuekey), '+ //lists
+		        'tr.rowNormal:has(a[href^=/browse/]), tr.rowAlternate:has(a[href^=/browse/])', //dashboard
+  summary:  'td.summary a, '+ //lists
+	          'td:nth-child(3) a[href^=/browse/], ', //dashboard
+  issuekey: 'td.issuekey a, '+ //lists
+	          'td:nth-child(2) a[href^=/browse/], td:nth-child(2) a[href^=/browse/], ', //dashboard
+  issuepage: {
+    issuekey:  '.breadcrumbs a#key-val,'+ //v4 issue page
+	            'table#issuedetails a[href^=/browse/]', //v3 issue page
+    summary: '#issue_header_summary a,'+ //v4 issue page
+  	          'h3.formtitle:eq(0)' //v3 issue page
+  }
 };
 
 jira.initialize = function() {
@@ -15,8 +22,8 @@ jira.initialize = function() {
 
   if(jira.issues.length < 1) {
     console.log('not on list page (or empty list)');
-    var key = $(jira.selectors.issuekey);
-    var summary = $(jira.selectors.summary);
+    var key = $(jira.selectors.issuepage.issuekey);
+    var summary = $(jira.selectors.issuepage.summary);
     if(key && summary) {
       jira.issue = {
         key: key,
@@ -123,7 +130,7 @@ var command = {
   startLog: function(source) {
     var issue;
     if(source.nodeName) {
-      issue = jira.util.parseIssue(tr);
+      issue = jira.util.parseIssue(source);
     } else {
       issue = {
         key: source.key.text().trim(),
