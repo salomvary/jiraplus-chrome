@@ -8,4 +8,21 @@
 * paging
 * mouse support
 * help
+* better feedback while publishing issues
+* compatibility with jira 4 shortcuts:
+ * dashboard: gd
+ * project: gp
+ * find issues: gi
+ * quick search: /
+ * create: c
+ * help: ?
+ * submit: alt+s
+ * edit: e
+ * assign: a
+ * comment: m
+ * next issue: j
+ * prev issue: k
+ * next item: n
+ * prev item: p
+ * edit labels: l
 

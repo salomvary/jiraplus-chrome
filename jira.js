@@ -1,14 +1,30 @@
 var jira = {};
 
 jira.selectors = {
+  //lists, dashboard
   issues: '#issuetable tr:has(td.issuekey), tr.rowNormal:has(a[href^=/browse/]), tr.rowAlternate:has(a[href^=/browse/])',
-  summary: 'td.summary a, td:nth-child(3) a[href^=/browse/]',
-  issuekey: 'td.issuekey a, td:nth-child(2) a[href^=/browse/]'
+  //lists, dashboard, issue page (v4, v3)
+  summary: 'td.summary a, td:nth-child(3) a[href^=/browse/], #issue_header_summary a, h3.formtitle' ,
+  //lists, dashboard, issue page (v4, v3)
+  issuekey: 'td.issuekey a, td:nth-child(2) a[href^=/browse/], .breadcrumbs a#key-val, table#issuedetails a[href^=/browse/]'
 };
 
 jira.initialize = function() {
   jira.issues = $(jira.selectors.issues);
   jira.issues.active = -1;
+
+  if(jira.issues.length < 1) {
+    console.log('not on list page (or empty list)');
+    var key = $(jira.selectors.issuekey);
+    var summary = $(jira.selectors.summary);
+    if(key && summary) {
+      jira.issue = {
+        key: key,
+        summary: summary
+      };
+      console.log('on issue page', jira.issue);
+    }
+  }
 
   $(document).keydown(function(event) {
    console.log(event.which);
@@ -71,27 +87,49 @@ var command = {
     $('a[accesskey=F], a[accesskey=b]').last().each(jira.util.activateLink);
   },
 
-  copy: function(tr) {
+  copy: function(source) {
+    console.log('copy', source);
     //TODO: save and restore original selection, if any
     var selection = window.getSelection();
-    var range = document.createRange();    
-    var summaryNode = $(jira.selectors.summary,tr)[0];
-    range.setStart($(jira.selectors.issuekey,tr)[0], 0);
-    range.setEnd(summaryNode, summaryNode.childNodes.length);
     selection.removeAllRanges();
-    selection.addRange(range);
-    document.execCommand("Copy"); 
+    if(source.nodeName) {
+      var range = document.createRange();    
+      var summaryNode = $(jira.selectors.summary,source)[0];
+      range.setStart($(jira.selectors.issuekey,source)[0], 0);
+      range.setEnd(summaryNode, summaryNode.childNodes.length);
+      selection.addRange(range);
+      //do some feedback
+      $(source).fadeTo('fast', 0, function(){$(this).fadeTo('fast',1);});
+      document.execCommand("Copy"); 
+    } else {
+      //hack: webkit doesn't support non-adjacent ranges 
+      $('<span/>').text(source.key.text().trim()+ ' ').prependTo(source.summary);
+
+      var summaryRange = document.createRange();
+      summaryRange.selectNodeContents(source.summary.get(0));
+      selection.addRange(summaryRange);
+      //TODO: feedback
+      document.execCommand("Copy"); 
+      source.summary.children(0).remove();
+    }
+    console.log('copying:'+selection.toString(), selection.rangeCount);
     selection.removeAllRanges();
-    //do some feedback
-    $(tr).fadeTo('fast', 0, function(){$(this).fadeTo('fast',1);});
   },
 
   activate: function(tr) {
     $(jira.selectors.issuekey,tr).first().each(jira.util.activateLink);
   },
 
-  startLog: function(tr) {
-    var issue = jira.util.parseIssue(tr);
+  startLog: function(source) {
+    var issue;
+    if(source.nodeName) {
+      issue = jira.util.parseIssue(tr);
+    } else {
+      issue = {
+        key: source.key.text().trim(),
+        summary: source.summary.text().trim(),
+      };
+    }
     rpc.port.postMessage({
       cmd: "startLog", 
       issue: issue
@@ -105,8 +143,8 @@ var command = {
   },
   
   withActive: function(cmd) {
-    if(jira.issues.active > -1) {
-      command[cmd](jira.issues[jira.issues.active]);
+    if(jira.issues.active > -1 || jira.issue) {
+      command[cmd](jira.issues[jira.issues.active] || jira.issue);
     }
   }
 };
@@ -116,8 +154,7 @@ jira.util = {
     var key = $(jira.selectors.issuekey, tr).eq(0);
     return {
       key: key.text().trim(),
-      summary: $(jira.selectors.summary, tr).eq(0).text().trim(),
-      url: key.attr('href')
+      summary: $(jira.selectors.summary, tr).eq(0).text().trim()
     };
   },
   scrollTo: function(element) {
@@ -144,10 +181,10 @@ var bar = {
       bar.element = $('#jirainfobar');
     }
     bar.element.html(
-      '<a href="'+
-      issue.url+'" class="issuekey">'+
-      issue.key+'</a> | <a href="'+
-      issue.url+'" class="summary">'+
+      '<a href="/browse/'+
+      issue.key+'" class="issuekey">'+
+      issue.key+'</a> | <a href="/browse/'+
+      issue.key+'" class="summary">'+
       issue.summary+'</a> | <span class="time">'+
       (issue.end ? util.formatTime(issue.end - issue.begin) : '00:00:00')+
       '</span>');
