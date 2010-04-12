@@ -1,3 +1,4 @@
+* display top bar in newly loaded pages as early, as it is possible
 * add keyboard shortcuts:
   * show history
 * don't try to copy issue if something is selected

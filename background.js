@@ -12,7 +12,7 @@ var log = {
 
     //broadcast, badge
     //rpc.postToTabs({cmd: 'startLog'});
-    chrome.browserAction.setBadgeText({text: 'LOG'});
+    chrome.browserAction.setBadgeText({text: 'ON'});
   },
   stop: function() {
     console.log(
