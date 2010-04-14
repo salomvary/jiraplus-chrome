@@ -50,10 +50,19 @@ var log = {
 //handles incoming and outgoing messages
 var rpc = {
   _ports: {},
-  postToTabs: function(message) {
-    //post to all tabs
-    for(var tabId in rpc._ports) {
-      rpc._ports[tabId].postMessage(message);
+  postToTabs: function(message, tabIds) {
+    if(typeof tabIds == 'undefined') {
+      //post to all tabs
+      for(var tabId in rpc._ports) {
+        rpc._ports[tabId].postMessage(message);
+      }
+    } else  {
+      if(! $.isArray(tabIds)){
+        tabIds = [tabIds];
+      }
+      tabIds.forEach(function(tabId) {
+        rpc._ports[tabId].postMessage(message);       
+      });
     }
   },
   command: {
@@ -79,12 +88,18 @@ var rpc = {
     }
   },
   onConnect: function(port) {
-    console.log('port connected',port);
+    console.log('port connected',port, port.sender.tab.id);
     rpc._ports[port.sender.tab.id] = port; //send
     port.onMessage.addListener(rpc.onMessage); //receive
+
     //rpc._selectedTab = port.sender.tab.id;
     //FIXME: remove detached tab
     //port.onDisconnect.addListener(port.onMessage);
+
+    //show active entry immediately
+    if(log.active) {
+      rpc.postToTabs({cmd: 'startLog', issue: log.active}, port.sender.tab.id);
+    }
   }
 };
 
