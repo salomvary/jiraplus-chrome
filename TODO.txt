@@ -1,7 +1,7 @@
 * display top bar in newly loaded pages as early, as it is possible
 * worklog comment
 * add keyboard shortcuts:
-  * show history
+  * DONE show history
 * don't try to copy issue if something is selected
 * drop work logs < 30s
 * prompt for configuration
@@ -13,6 +13,7 @@
 * mouse support
 * help
 * better feedback while publishing issues
+* make history "singleton"
 * compatibility with jira 4 shortcuts:
  * dashboard: gd
  * project: gp

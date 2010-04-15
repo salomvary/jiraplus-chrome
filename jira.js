@@ -72,6 +72,11 @@ jira.initialize = function() {
           command.stopLog();
         }
         break;
+      case 73: //i
+		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+          command.showHistory();
+        }
+        break;
       }
     }
   });
@@ -148,12 +153,17 @@ var command = {
     rpc.port.postMessage({cmd: "stopLog"});
     bar.hide();
   },
+
+  showHistory: function() {
+    rpc.port.postMessage({cmd: "showHistory"});
+  },
   
   withActive: function(cmd) {
     if(jira.issues.active > -1 || jira.issue) {
       command[cmd](jira.issues[jira.issues.active] || jira.issue);
     }
-  }
+  }  
+
 };
 
 jira.util = {

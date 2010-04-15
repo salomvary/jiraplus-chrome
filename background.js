@@ -1,3 +1,12 @@
+//misc background functions
+var background = {
+  showHistory: function() {
+    //TODO: use existing history tab, if any
+    chrome.tabs.create({url: 'history.html'});
+  }
+};
+
+//work logging
 var log = {
   entries: [],
   start: function(issue){
@@ -77,7 +86,8 @@ var rpc = {
     },
     publish: function() {
       log.publish();
-    }
+    },
+    showHistory: background.showHistory
   },
   onMessage: function(request) {
     console.log('message received',request);
@@ -131,6 +141,6 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
 
 //handle browser action button
 chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.create({url: 'history.html'});
+  background.showHistory();
 });
 
