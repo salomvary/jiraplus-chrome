@@ -1,7 +1,47 @@
-table{
+body, table{
+  font-family: "Arial", sans-serif;
+  font-size: 12px;
+}
+#issuetable{
   border-collapse: collapse;
 }
-table th,
-table td {
+#issuetable td,
+#issuetable th {
   border: 1px solid #ccc;
+  padding: 3px;
+}
+#issuetable td{
+  font-size: 11px;
+  white-space: nowrap;
+}
+#issuetable th{
+  background: #aaa;
+}
+#issuetable a{
+  color: #555;
+  text-decoration: none;
+}
+#issuetable .issuekey a{
+  text-decoration: underline;
+}
+#issuetable .summary{
+  font-size: 12px;
+  white-space: normal;
+}
+#issuetable td.time{
+  text-align: right;
+  font-weight: bold;
+}
+#issuetable td.button{
+  padding: 0;
+}
+
+fieldset{
+  border: 1px solid #ccc;
+  display: inline-block;
+  margin: 1em 0;
+}
+fieldset label{
+  width: 85px;
+  display: inline-block;
 }

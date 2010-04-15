@@ -8,7 +8,7 @@
   <body>
     <h1>Pending worklogs</h1>
     <div id="logs">
-      <table>
+      <table id="issuetable">
         <thead>
           <tr>
             <th>Issue</th>
@@ -19,20 +19,20 @@
             <th></th>
           </tr>
           <tr style="display:none" id="proto">
-            <td class="key"><a href=""></a></td>
+            <td class="issuekey key"><a href=""></a></td>
             <td class="summary"><a href=""></a></td>
             <td class="begin"></td>
             <td class="end"></td>
             <td class="time"></td>
-            <td><button type="button" name="delete">delete</button>
+            <td class="button"><button type="button" name="delete">delete</button>
           </tr>
         </thead>
       </table>
       <form name="login">
         <fieldset style="display:none" id="login">
           <legend>Login</legend>
-          <p><label>Username:<input type="text" name="username"/></label></p>
-          <p><label>Password:<input type="password" name="password"/></label></p>
+          <p><label>Username:</label><input type="text" name="username"/></p>
+          <p><label>Password:</label><input type="password" name="password"/></p>
           <strong id="loginError" style="display:none"></strong>
         </fieldset>
       </form>
