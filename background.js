@@ -8,14 +8,27 @@ var background = {
 
 //work logging
 var log = {
+  initialize: function() {
+    //recover active issue
+    if(localStorage.active) {
+      //FIXME: confirm recovery: (recover&continue || recover&stop || delete)
+      var issue = JSON.parse(localStorage.active);
+      console.log('issue recovered', issue);
+      log.start(issue);
+    }
+  },
   entries: [],
   start: function(issue){
+    console.log('log started', issue.key);
     if(log.active) {
       log.stop();
     }
-    console.log('log started', issue.key);
+    if( !issue.begin ) {
+      issue.begin = new Date().valueOf();
+    }
     log.active = issue;
-    log.active.begin = new Date().valueOf();
+
+    //start timers
     log._tick = setInterval(log.tick, 1000);
     log._store = setInterval(log.store, 2000); //FIXME set to ~1m in production
 
@@ -29,11 +42,16 @@ var log = {
       log.active.key,
       util.formatTime(log.active.end - log.active.begin)
     );
+
+    //stop timers
     clearInterval(log._tick);
     clearInterval(log._store);
+
+    //update storage
     log.entries.push(log.active);
     log.active = undefined;
     log.store();
+
     //broadcast, badge
     rpc.postToTabs({cmd: 'stopLog'});
     chrome.browserAction.setBadgeText({text: ''});
@@ -55,6 +73,8 @@ var log = {
     }
   }
 };
+
+log.initialize();
 
 //handles incoming and outgoing messages
 var rpc = {
