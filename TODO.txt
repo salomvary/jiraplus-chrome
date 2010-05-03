@@ -14,6 +14,7 @@
 * help
 * better feedback while publishing issues
 * make history "singleton"
+* ask for active issue recovery options
 * compatibility with jira 4 shortcuts:
  * dashboard: gd
  * project: gp
