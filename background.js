@@ -110,7 +110,6 @@ var rpc = {
     showHistory: background.showHistory
   },
   onMessage: function(request) {
-    console.log('message received',request);
     if(rpc.command[request.cmd]) {
         rpc.command[request.cmd](request);
     } else {
@@ -118,7 +117,6 @@ var rpc = {
     }
   },
   onConnect: function(port) {
-    console.log('port connected',port, port.sender.tab.id);
     rpc._ports[port.sender.tab.id] = port; //send
     port.onMessage.addListener(rpc.onMessage); //receive
 
@@ -138,10 +136,8 @@ chrome.extension.onConnect.addListener(rpc.onConnect);
 
 //add content scripts to configured urls
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  console.log('tabUpdated', tabId, changeInfo.status, changeInfo.url, tab);
   //check if url starts with configured url
   if(changeInfo.status == 'loading' && localStorage.jiraUrl && tab.url && tab.url.substring(0, localStorage.jiraUrl.length) == localStorage.jiraUrl) {
-    console.log('adding content script and css');
     chrome.tabs.executeScript(tab.id, {file: "jquery-1.4.2.min.js"});
     chrome.tabs.executeScript(tab.id, {file: "common.js"});
     chrome.tabs.executeScript(tab.id, {file: "jira.js"});

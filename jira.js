@@ -100,7 +100,6 @@ var command = {
   },
 
   copy: function(source) {
-    console.log('copy', source);
     //TODO: save and restore original selection, if any
     var selection = window.getSelection();
     selection.removeAllRanges();
@@ -124,7 +123,6 @@ var command = {
       document.execCommand("Copy"); 
       source.summary.children(0).remove();
     }
-    console.log('copying:'+selection.toString(), selection.rangeCount);
     selection.removeAllRanges();
   },
 
