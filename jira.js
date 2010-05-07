@@ -17,20 +17,22 @@ jira.selectors = {
 };
 
 jira.initialize = function() {
+  //try issue list
   jira.issues = $(jira.selectors.issues);
   jira.issues.active = -1;
+  if(jira.issues.length > 0) {
+    console.log('issue list found');
+  }
 
-  if(jira.issues.length < 1) {
-    console.log('not on list page (or empty list)');
-    var key = $(jira.selectors.issuepage.issuekey);
-    var summary = $(jira.selectors.issuepage.summary);
-    if(key && summary) {
-      jira.issue = {
-        key: key,
-        summary: summary
-      };
-      console.log('on issue page', jira.issue);
-    }
+  //try single issue
+  var key = $(jira.selectors.issuepage.issuekey);
+  var summary = $(jira.selectors.issuepage.summary);
+  if(key && summary) {
+    jira.issue = {
+      key: key,
+      summary: summary
+    };
+    console.log('single issue found', jira.issue);
   }
 
   $(document).keydown(function(event) {
