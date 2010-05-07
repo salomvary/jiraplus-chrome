@@ -1,4 +1,4 @@
-* display top bar in newly loaded pages as early, as it is possible
+* DONE display top bar in newly loaded pages as early, as it is possible
 * worklog comment
 * add keyboard shortcuts:
   * DONE show history
@@ -15,6 +15,8 @@
 * better feedback while publishing issues
 * make history "singleton"
 * ask for active issue recovery options
+* add navigation to history
+* optionally persist JIRA password and/or username
 * compatibility with jira 4 shortcuts:
  * dashboard: gd
  * project: gp
