@@ -32,7 +32,7 @@ var history = {
     } else {
       //if token exists, check whether it has expired
       console.log('trying existing token:'+soap.token);
-      soap.getFavouriteFilters();
+      soap.getSavedFilters();
     }
     /*
     port.onMessage.addListener(function(issue) {
@@ -158,11 +158,11 @@ var soap = {
       onError
     );
   },
-  getFavouriteFilters: function() {
+  getSavedFilters: function() {
     soap.request(
-      '<getFavouriteFilters>' +
+      '<getSavedFilters>' +
         '<in0>'+soap.token+'</in0>' +
-      '</getFavouriteFilters>',
+      '</getSavedFilters>',
       //won't parse response since this is only used for validating token
       function(xml) {
       },
