@@ -31,8 +31,18 @@
       <form name="login">
         <fieldset style="display:none" id="login">
           <legend>Login</legend>
-          <p><label>Username:</label><input type="text" name="username"/></p>
-          <p><label>Password:</label><input type="password" name="password"/></p>
+          <p>
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username"/>
+            <input type="checkbox" name="remember_username" id="remember_username"/>
+            <label for="remember_username">remember</label>
+          </p>
+          <p>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password"/>
+            <input type="checkbox" name="remember_password" id="remember_password"/>
+            <label for="remember_password">remember</label>
+          </p>
           <strong id="loginError" style="display:none"></strong>
         </fieldset>
       </form>

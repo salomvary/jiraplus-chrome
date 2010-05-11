@@ -7,6 +7,17 @@ var history = {
     $('button[name=publish]').live('click', history.publish);
     history.proto = $('#proto');
 
+    //init form
+    var form = document.forms['login'];
+    if(localStorage.username) {
+      form.username.value = localStorage.username;
+      form.remember_username.checked = true;
+    }
+    if(localStorage.password) {
+      form.password.value = localStorage.password;
+      form.remember_password.checked = true;
+    }
+
     //set up communication
     history.port = chrome.extension.connect();
 
@@ -89,14 +100,32 @@ var history = {
     }
   },
   login: function(onSuccess) {
-    var username = document.forms['login'].username.value;
-    var password = document.forms['login'].password.value;
+    var form = document.forms['login'],
+        username = form.username.value,
+        password = form.password.value,
+        rememberPassword = form.remember_password.checked,
+        rememberUsername = form.remember_username.checked;
+
+    if(! rememberPassword) {
+      delete localStorage.password;
+    }
+
+    if(! rememberUsername) {
+      delete localStorage.username;
+    }
+
     if(username && password) {
       $('#loginError').hide();
       soap.login(username, password, 
-        function(token) {
+        function(token) {          
           $('#login').hide();
           localStorage.token = soap.token = token;
+          if(rememberPassword) {
+            localStorage.password = password;
+          }
+          if(rememberUsername) {
+            localStorage.username = username;
+          }
           if(onSuccess) {
             onSuccess();
           }
