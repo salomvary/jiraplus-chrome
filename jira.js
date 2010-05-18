@@ -191,24 +191,37 @@ jira.util = {
 
 //display bar at window top
 var bar = {
+  active: null,
   show: function(issue) {
+    //setup top bar
     if(! bar.element) {
-      $('body')
-        .prepend('<div id="jirainfobar"></div>');
-      bar.element = $('#jirainfobar');
+      bar.element = $(
+        '<div id="jirainfobar">' +
+          '<a class="issuekey" href=""></a>'+
+          ' | <a class="summary" href=""></a>'+
+          ' | <span class="time"></span>'+
+        '</div>'
+      ).prependTo('body');
+      bar.issuekey = $(bar.element).find('.issuekey');
+      bar.summary = $(bar.element).find('.summary');
+      bar.time = $(bar.element).find('.time');
     }
-    bar.element.html(
-      '<a href="/browse/'+
-      issue.key+'" class="issuekey">'+
-      issue.key+'</a> | <a href="/browse/'+
-      issue.key+'" class="summary">'+
-      issue.summary+'</a> | <span class="time">'+
-      (issue.end ? util.formatTime(issue.end - issue.begin) : '00:00:00')+
-      '</span>');
-    $('body').addClass('jirainfobar');
+    //update DOM
+    bar.time.text(issue.end ? util.formatTime(issue.end - issue.begin) : '00:00:00');
+    //update these only if issue differs
+    if(bar.active !== issue.key) {
+      bar.summary.href = bar.issuekey.href = '/browse/'+issue.key;
+      bar.issuekey.text(issue.key);
+      bar.summary.text(issue.summary);
+    }
+    if(! bar.active) {
+      $('body').addClass('jirainfobar');
+      bar.active = issue.key;
+    }
   },
 
   hide: function() {
+    delete bar.active;
     $('body').removeClass('jirainfobar');
   }
 };
