@@ -30,7 +30,7 @@ var log = {
 
     //start timers
     log._tick = setInterval(log.tick, 1000);
-    log._store = setInterval(log.store, 2000); //FIXME set to ~1m in production
+    log._store = setInterval(log.store, 60000); //persist every minute
 
     //broadcast, badge
     //rpc.postToTabs({cmd: 'startLog'});
