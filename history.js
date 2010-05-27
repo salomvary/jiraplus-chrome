@@ -1,11 +1,11 @@
-var history = {
+var logHistory = {
   entries: [],
   initialize: function() {
     //init interface
-    history.load();
-    $('button[name=delete]').live('click', history.deleteEntry);
-    $('button[name=publish]').live('click', history.publish);
-    history.proto = $('#proto');
+    logHistory.load();
+    $('button[name=delete]').live('click', logHistory.deleteEntry);
+    $('button[name=publish]').live('click', logHistory.publish);
+    logHistory.proto = $('#proto').remove();
 
     //init form
     var form = document.forms['login'];
@@ -19,7 +19,7 @@ var history = {
     }
 
     //set up communication
-    history.port = chrome.extension.connect();
+    logHistory.port = chrome.extension.connect();
 
     //set up soap token
     soap.token = localStorage.token;
@@ -39,6 +39,7 @@ var history = {
       bar.show(issue);
     });
     */
+	 jira.rpc.initialize(logHistory.port);
   },
   load: function() {
     var tbody = $('<tbody/>');
@@ -48,10 +49,10 @@ var history = {
 
       for(var i=0; i<res.rows.length; i++) {
         var entry = res.rows.item(i);
-        var row = history.proto.clone();
+        var row = logHistory.proto.clone();
         row.show();
         row.attr('id','entry-'+entry.id);
-        row.find('.key a, .summary a').attr('href','#'+entry.key); //FIXME
+        row.find('.key a, .summary a').attr('href', localStorage.jiraUrl+'/browse/'+entry.key);
         row.find('.key a').text(entry.key);
         row.find('.summary a').text(entry.summary);
         row.find('.begin').text(util.formatDate(entry.begin));
@@ -68,6 +69,7 @@ var history = {
         $('#nologs').show();
         $('#logs').hide();
       }
+		jira.initialize();
     });
   },
   deleteEntry: function() {
@@ -96,7 +98,7 @@ var history = {
         }
       });
     } else {
-      history.login(history.publish);
+      logHistory.login(logHistory.publish);
     }
   },
   login: function(onSuccess) {
@@ -141,7 +143,7 @@ var history = {
     }
   }
 };
-$(history.initialize);
+$(logHistory.initialize);
 
 var soap = {
   login: function(username, password, onSuccess, onError) {

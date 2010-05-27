@@ -17,6 +17,7 @@ jira.selectors = {
 };
 
 jira.initialize = function() {
+  jira.rpc.initialize();
   //try issue list
   jira.issues = $(jira.selectors.issues);
   jira.issues.active = -1;
@@ -27,7 +28,7 @@ jira.initialize = function() {
   //try single issue
   var key = $(jira.selectors.issuepage.issuekey);
   var summary = $(jira.selectors.issuepage.summary);
-  if(key && summary) {
+  if(key.length && summary.length) {
     jira.issue = {
       key: key,
       summary: summary
@@ -142,7 +143,7 @@ var command = {
         summary: source.summary.text().trim(),
       };
     }
-    rpc.port.postMessage({
+    jira.rpc.port.postMessage({
       cmd: "startLog", 
       issue: issue
     });
@@ -150,12 +151,12 @@ var command = {
   },
 
   stopLog: function() {
-    rpc.port.postMessage({cmd: "stopLog"});
+    jira.rpc.port.postMessage({cmd: "stopLog"});
     bar.hide();
   },
 
   showHistory: function() {
-    rpc.port.postMessage({cmd: "showHistory"});
+    jira.rpc.port.postMessage({cmd: "showHistory"});
   },
   
   withActive: function(cmd) {
@@ -227,11 +228,14 @@ var bar = {
 };
 
 //set up communication
-var rpc = {
-  port: chrome.extension.connect(),
+jira.rpc = {
+  initialize: function(port) {
+    jira.rpc.port = port || chrome.extension.connect();
+    jira.rpc.port.onMessage.addListener(jira.rpc.onMessage);
+  },
   onMessage: function(request) {
-    if(rpc.command[request.cmd]) {
-        rpc.command[request.cmd](request);
+    if(jira.rpc.command[request.cmd]) {
+        jira.rpc.command[request.cmd](request);
     } else {
       throw new Error('unknown command '+request.cmd);
     }
@@ -245,7 +249,8 @@ var rpc = {
     }
   }
 };
-rpc.port.onMessage.addListener(rpc.onMessage);
 
 //start
-$(jira.initialize);
+if(typeof logHistory == 'undefined')  { //history has it's own initialization
+	$(jira.initialize);
+}
