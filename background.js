@@ -26,7 +26,10 @@ var log = {
     if( !issue.begin ) {
       issue.begin = new Date().valueOf();
     }
+
+    //set&store active
     log.active = issue;
+    log.store();
 
     //start timers
     log._tick = setInterval(log.tick, 1000);
@@ -96,9 +99,6 @@ var rpc = {
   },
   command: {
     startLog: function(request) {
-      if(log.running) {
-        log.stop();
-      }
       log.start(request.issue);
     },
     stopLog: function() {
