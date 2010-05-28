@@ -211,7 +211,9 @@ var bar = {
     bar.time.text(issue.end ? util.formatTime(issue.end - issue.begin) : '00:00:00');
     //update these only if issue differs
     if(bar.active !== issue.key) {
-      bar.summary.href = bar.issuekey.href = '/browse/'+issue.key;
+		var url = '/browse/'+issue.key;
+      bar.summary.attr('href', url);
+		bar.issuekey.attr('href', url);
       bar.issuekey.text(issue.key);
       bar.summary.text(issue.summary);
     }
