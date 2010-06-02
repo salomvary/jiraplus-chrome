@@ -19,6 +19,7 @@
 * DONE optionally persist JIRA password and/or username
 * update history view when new entries are created
 * editable history entries (start time/end time/elapsed)
+* handle moved issues
 * compatibility with jira 4 shortcuts:
  * dashboard: gd
  * project: gp
