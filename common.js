@@ -55,7 +55,7 @@ util.zeroPad = function(num) {
 
 var entryManager = {
   initialize: function() {
-    entryManager.db = window.openDatabase('jira', '');
+    entryManager.db = window.openDatabase('jira', '', 'jira', 2000000);
     if(! entryManager.db) {
       console.error('error opening database');
     } else {
