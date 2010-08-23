@@ -75,6 +75,7 @@ var log = {
     //broadcast, badge
     //rpc.postToTabs({cmd: 'startLog'});
     chrome.browserAction.setBadgeText({text: 'ON'});
+    chrome.browserAction.setTitle({title: issue.key + ' ' + issue.summary});
   },
   stop: function() {
     console.log(
@@ -95,6 +96,7 @@ var log = {
     //broadcast, badge
     rpc.postToTabs({cmd: 'stopLog'});
     chrome.browserAction.setBadgeText({text: ''});
+    chrome.browserAction.setTitle({title: ''});
   },
   tick: function() {
     log.active.end = new Date().valueOf();
