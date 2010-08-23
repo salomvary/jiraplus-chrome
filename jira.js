@@ -3,16 +3,16 @@ var jira = {};
 jira.selectors = {
   //lists, dashboard
   issues:   '#issuetable tr:has(td.issuekey), '+ //lists
-		        'tr.rowNormal:has(a[href^=/browse/]), tr.rowAlternate:has(a[href^=/browse/])', //dashboard
+            'tr.rowNormal:has(a[href^=/browse/]), tr.rowAlternate:has(a[href^=/browse/])', //dashboard
   summary:  'td.summary a, '+ //lists
-	          'td:nth-child(3) a[href^=/browse/], ', //dashboard
+            'td:nth-child(3) a[href^=/browse/], ', //dashboard
   issuekey: 'td.issuekey a, '+ //lists
-	          'td:nth-child(2) a[href^=/browse/], td:nth-child(2) a[href^=/browse/], ', //dashboard
+            'td:nth-child(2) a[href^=/browse/], td:nth-child(2) a[href^=/browse/], ', //dashboard
   issuepage: {
     issuekey:  '.breadcrumbs a#key-val,'+ //v4 issue page
-	            'table#issuedetails a[href^=/browse/]', //v3 issue page
+              'table#issuedetails a[href^=/browse/]', //v3 issue page
     summary: '#issue_header_summary a,'+ //v4 issue page
-  	          'h3.formtitle:eq(0)' //v3 issue page
+              'h3.formtitle:eq(0)' //v3 issue page
   }
 };
 
@@ -41,22 +41,22 @@ jira.initialize = function() {
    if(['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'].indexOf(event.target.nodeName) == -1) {
      switch(event.which) {
       case 74: //j
-		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+        if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
           command.move(1);
         }
         break;
       case 75: //k
-		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+        if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
           command.move(-1);
         }
         break;
       case 13: //enter
-		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+        if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
           command.withActive('activate');
         }
         break;
       case 85: //u
-		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+        if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
           command.up();
         }
         break;
@@ -66,17 +66,17 @@ jira.initialize = function() {
         }
         break;
       case 87: //w
-		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+        if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
           command.withActive('startLog');
         }
         break;
       case 83: //s
-		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+        if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
           command.stopLog();
         }
         break;
       case 73: //i
-		    if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
+        if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
           command.showHistory();
         }
         break;
@@ -103,30 +103,32 @@ var command = {
   },
 
   copy: function(source) {
-    //TODO: save and restore original selection, if any
     var selection = window.getSelection();
-    selection.removeAllRanges();
-    if(source.nodeName) {
-      var range = document.createRange();    
-      var summaryNode = $(jira.selectors.summary,source)[0];
-      range.setStart($(jira.selectors.issuekey,source)[0], 0);
-      range.setEnd(summaryNode, summaryNode.childNodes.length);
-      selection.addRange(range);
-      //do some feedback
-      $(source).fadeTo('fast', 0, function(){$(this).fadeTo('fast',1);});
-      document.execCommand("Copy"); 
-    } else {
-      //hack: webkit doesn't support non-adjacent ranges 
-      $('<span/>').text(source.key.text().trim()+ ' ').prependTo(source.summary);
+    if(! selection.rangeCount || selection.isCollapsed) { //if something is selected, fallback to default (copy that)
+      //TODO: save and restore original selection, if any
+      selection.removeAllRanges();
+      if(source.nodeName) {
+        var range = document.createRange();    
+        var summaryNode = $(jira.selectors.summary,source)[0];
+        range.setStart($(jira.selectors.issuekey,source)[0], 0);
+        range.setEnd(summaryNode, summaryNode.childNodes.length);
+        selection.addRange(range);
+        //do some feedback
+        $(source).fadeTo('fast', 0, function(){$(this).fadeTo('fast',1);});
+        document.execCommand("Copy"); 
+      } else {
+        //hack: webkit doesn't support non-adjacent ranges 
+        $('<span/>').text(source.key.text().trim()+ ' ').prependTo(source.summary);
 
-      var summaryRange = document.createRange();
-      summaryRange.selectNodeContents(source.summary.get(0));
-      selection.addRange(summaryRange);
-      //TODO: feedback
-      document.execCommand("Copy"); 
-      source.summary.children(0).remove();
+        var summaryRange = document.createRange();
+        summaryRange.selectNodeContents(source.summary.get(0));
+        selection.addRange(summaryRange);
+        //TODO: feedback
+        document.execCommand("Copy"); 
+        source.summary.children(0).remove();
+      }
+      selection.removeAllRanges();
     }
-    selection.removeAllRanges();
   },
 
   activate: function(tr) {
@@ -211,9 +213,9 @@ var bar = {
     bar.time.text(issue.end ? util.formatTime(issue.end - issue.begin) : '00:00:00');
     //update these only if issue differs
     if(bar.active !== issue.key) {
-		var url = '/browse/'+issue.key;
+    var url = '/browse/'+issue.key;
       bar.summary.attr('href', url);
-		bar.issuekey.attr('href', url);
+    bar.issuekey.attr('href', url);
       bar.issuekey.text(issue.key);
       bar.summary.text(issue.summary);
     }
@@ -254,5 +256,5 @@ jira.rpc = {
 
 //start
 if(typeof logHistory == 'undefined')  { //history has it's own initialization
-	$(jira.initialize);
+  $(jira.initialize);
 }

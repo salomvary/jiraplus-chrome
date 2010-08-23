@@ -2,7 +2,7 @@
 * worklog comment
 * add keyboard shortcuts:
   * DONE show history
-* don't try to copy issue if something is selected
+* DONE don't try to copy issue if something is selected
 * drop work logs < 30s
 * prompt for configuration
 * validate jira url, keep only scheme and domain part
