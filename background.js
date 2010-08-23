@@ -1,8 +1,45 @@
 //misc background functions
-var background = {
+var background = {  
   showHistory: function() {
-    //TODO: use existing history tab, if any
-    chrome.tabs.create({url: 'history.html'});
+    if(! background.tabClosed) {
+      chrome.tabs.onRemoved.addListener((background.tabClosed = function(tabId) {
+        if(tabId === background.historyTabId) {
+          delete background.historyTabId;
+        }
+      }));
+    }
+    chrome.tabs.getSelected(null, function(selectedTab){
+      if(! background.historyTabId) {
+        //create as next
+        chrome.tabs.create(
+          {
+            url: 'history.html', 
+            index: selectedTab.index + 1
+          }, 
+          function(tab) {
+            background.historyTabId = tab.id;
+          }
+        );
+      } else {
+        //TODO: would be nice to simply activate tab, but it doesn't work if 
+        //it is in another window
+        //http://code.google.com/p/chromium/issues/detail?id=31434
+        //chrome.windows.update(historyTab.windowId, {focused:true});
+
+        chrome.tabs.get(background.historyTabId, function(historyTab) {
+
+          //FIX: move tab to active window
+          if(historyTab.windowId !== selectedTab.windowId) {
+            chrome.tabs.move(historyTab.id, {
+              windowId: selectedTab.windowId,
+              index: selectedTab.index + 1
+            });
+          }
+          //activate tab
+          chrome.tabs.update(historyTab.id, {selected:true});
+        });
+      }        
+    });
   }
 };
 

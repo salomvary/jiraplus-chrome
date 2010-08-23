@@ -13,7 +13,7 @@
 * mouse support
 * help
 * better feedback while publishing issues
-* make history "singleton"
+* DOME make history "singleton"
 * ask for active issue recovery options
 * DONE add navigation to history
 * DONE optionally persist JIRA password and/or username
