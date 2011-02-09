@@ -160,8 +160,11 @@ var rpc = {
     port.onMessage.addListener(rpc.onMessage); //receive
 
     //rpc._selectedTab = port.sender.tab.id;
-    //FIXME: remove detached tab
-    //port.onDisconnect.addListener(port.onMessage);
+
+    //remove detached tab
+    port.onDisconnect.addListener(function() {
+      delete rpc._ports[port.sender.tab.id];
+    });
 
     //show active entry immediately
     if(log.active) {
