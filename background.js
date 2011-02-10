@@ -7,6 +7,16 @@ var background = {
           delete background.historyTabId;
         }
       }));
+      chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+        if(
+          tabId === background.historyTabId && 
+          changeInfo.url &&
+          changeInfo.url.indexOf(chrome.extension.getURL('history.html')) !== 0) 
+        {
+          //navigated away from history
+          delete background.historyTabId;			    
+        }
+      });
     }
     chrome.tabs.getSelected(null, function(selectedTab){
       if(! background.historyTabId) {
