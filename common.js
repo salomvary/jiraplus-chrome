@@ -107,6 +107,16 @@ var entryManager = {
       tr.executeSql('SELECT * FROM entries', [], onSuccess, entryManager._error);
     });
   },
+  set: function(id, key, value, onSuccess, onError) {
+    entryManager.db.transaction(function(tr) {
+      tr.executeSql(
+        'UPDATE entries SET '+key+'=? WHERE id=?',
+        [value, id],
+        onSuccess,
+        onError || entryManager._error
+      );
+    });
+  },
   update: function(id, entry) {
     entryManager.db.transaction(function(tr) {
       tr.executeSql(

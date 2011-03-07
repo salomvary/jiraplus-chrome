@@ -5,6 +5,8 @@ var logHistory = {
     logHistory.load();
     $('button[name=delete]').live('click', logHistory.deleteEntry);
     $('button[name=publish]').live('click', logHistory.publish);
+    $('td.begin:not(:has(input)),td.end:not(:has(input))').live('click', logHistory.editEntry);
+    $('td.begin input,td.end input').live('blur', logHistory.saveEntry);
     logHistory.proto = $('#proto').remove();
 
     //init form
@@ -79,6 +81,49 @@ var logHistory = {
       row.remove();
     });
   },  
+  editEntry: function() {
+    var cell = $(this),
+      value = $.trim(cell.text());
+    var input = $('<input/>', {
+      type: 'text',
+      data: {original: new Date(value)},
+      value: $.trim(value)
+    });
+    cell.html(input);
+    input.focus();
+  },
+  saveEntry: function() {
+    // TODO: make this more user friendly
+    // FIXME: update computed elapsed time
+    var row = $(this).closest('tr'), 
+      cell = $(this).closest('td'),
+      input = $(this),
+      date = new Date(input.val()),
+      original = input.data('original');
+    if(! isNaN(date)) {
+      if(date.valueOf() !== original.valueOf()) {
+        cell.text('saving...');
+        var id = row.attr('id').substring('entry-'.length);
+        entryManager.set(id, cell.hasClass('begin') ? 'begin' : 'end', date.valueOf(), 
+        function(tr, res) { //success
+          cell.text(util.formatDate(date));
+        }, 
+        function(tr, err) { //error
+          //TODO: tell the user
+          console.error('error setting date', err);
+          cell.text(util.formatDate(original));
+        });
+        console.log('changed');
+      } else {
+        console.log('date not changed');
+        cell.text(util.formatDate(original));
+      }
+    } else {
+      //TODO: tell the user
+      console.error('invalid date: '+input.val());
+      cell.text(util.formatDate(original));
+    }
+  },
   publish: function() {
     //TODO: lock user interface (delete/edit/publish) while publishing
     if(soap.token) {
