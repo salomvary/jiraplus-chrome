@@ -1,7 +1,22 @@
+.jirasel{
+	background-color: #abc6f8 !important;
+}
+.jirasel *{
+  background: transparent;
+}
+
 .jirahl{
 	background-color: #d7fe65 !important;
 }
 .jirahl *{
+  background: transparent;
+}
+
+
+.jirahl.jirasel{
+	background-color: #c1e2af !important;
+}
+.jirahl.jirasel *{
   background: transparent;
 }
 

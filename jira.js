@@ -37,7 +37,7 @@ jira.initialize = function() {
   }
 
   $(document).keydown(function(event) {
-   console.log(event.which);
+   console.log(event);
    if(['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'].indexOf(event.target.nodeName) == -1) {
      switch(event.which) {
       case 74: //j
@@ -52,7 +52,7 @@ jira.initialize = function() {
         break;
       case 13: //enter
         if(! (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)) {
-          command.withActive('activate');
+          command.withSelection('activate');
         }
         break;
       case 85: //u
@@ -80,6 +80,12 @@ jira.initialize = function() {
           command.showHistory();
         }
         break;
+      case 65: //ctrl + a
+        if(event.ctrlKey && !(event.shiftKey || event.altKey)) {
+          command.selectAll();
+          event.preventDefault();
+        }
+        break;       
       }
     }
   });
@@ -131,8 +137,29 @@ var command = {
     }
   },
 
-  activate: function(tr) {
-    $(jira.selectors.issuekey,tr).first().each(jira.util.activateLink);
+  activate: function(selection) {
+    if(selection.length > 1) {
+      jira.rpc.port.postMessage({
+        cmd: 'openTabs',
+        tabs: $.map(selection, function(tr) {
+          return $(tr).find(jira.selectors.issuekey)[0].href;
+        })
+      });
+    } else {
+      selection.find(jira.selectors.issuekey).first().each(jira.util.activateLink);
+    }
+  },
+
+  selectAll: function() {
+    if(jira.selected) {
+      // unselect all
+      jira.selected.removeClass('jirasel');
+      delete jira.selected;
+    } else {
+      // select all
+      jira.selected = $(jira.issues);
+      jira.selected.addClass('jirasel');
+    }
   },
 
   startLog: function(source) {
@@ -165,7 +192,15 @@ var command = {
     if(jira.issues.active > -1 || jira.issue) {
       command[cmd](jira.issues[jira.issues.active] || jira.issue);
     }
-  }  
+  },
+
+  withSelection: function(cmd) {
+    var selection = jira.issues.active > -1 ? $(jira.issues[jira.issues.active]) 
+      : (jira.issue || jira.selected);
+    if(selection) {
+      command[cmd](selection);
+    }
+  }
 
 };
 
@@ -258,3 +293,5 @@ jira.rpc = {
 if(typeof logHistory == 'undefined')  { //history has it's own initialization
   $(jira.initialize);
 }
+
+// vim:ts=2:sw=2:et:

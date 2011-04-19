@@ -50,6 +50,18 @@ var background = {
         });
       }        
     });
+  },
+  openTabs: function(request) {
+    console.log('openTabs', request.tabs);
+    chrome.tabs.getSelected(null, function(tab) {
+      $.each(request.tabs, function(i, href) {
+        chrome.tabs.create({
+          index: tab.index + i + 1,
+          url: href,
+          selected: false
+        });
+      });
+    });
   }
 };
 
@@ -156,7 +168,8 @@ var rpc = {
     publish: function() {
       log.publish();
     },
-    showHistory: background.showHistory
+    showHistory: background.showHistory,
+    openTabs: background.openTabs
   },
   onMessage: function(request) {
     if(rpc.command[request.cmd]) {
@@ -212,3 +225,4 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   background.showHistory();
 });
 
+// vim:ts=2:sw=2:et:
