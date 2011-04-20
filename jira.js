@@ -62,7 +62,7 @@ jira.initialize = function() {
         break;
       case 67: //ctrl + c
         if(event.ctrlKey && !(event.shiftKey || event.altKey)) {
-          command.withActive('copy');
+          command.withSelection('copy');
         }
         break;
       case 87: //w
@@ -108,32 +108,24 @@ var command = {
     $('a[accesskey=F], a[accesskey=b]').last().each(jira.util.activateLink);
   },
 
-  copy: function(source) {
-    var selection = window.getSelection();
-    if(! selection.rangeCount || selection.isCollapsed) { //if something is selected, fallback to default (copy that)
-      //TODO: save and restore original selection, if any
-      selection.removeAllRanges();
-      if(source.nodeName) {
-        var range = document.createRange();    
-        var summaryNode = $(jira.selectors.summary,source)[0];
-        range.setStart($(jira.selectors.issuekey,source)[0], 0);
-        range.setEnd(summaryNode, summaryNode.childNodes.length);
-        selection.addRange(range);
+  copy: function(selection) {
+    var selected = window.getSelection(), text;
+    if(! selected.rangeCount || selected.isCollapsed) { //if something is selected, fallback to default (copy that)
+      if(selection.length > -1) { // tr*
+        text = $.map(selection, function(tr) {
+          var $tr = $(tr),
+            key = $tr.find(jira.selectors.issuekey).first().text(), //FIXME .first() for too generic selector
+            summary = $tr.find(jira.selectors.summary).text();
+          return key + ' ' + summary;
+        }).join('\n');
         //do some feedback
-        $(source).fadeTo('fast', 0, function(){$(this).fadeTo('fast',1);});
-        document.execCommand("Copy"); 
-      } else {
-        //hack: webkit doesn't support non-adjacent ranges 
-        $('<span/>').text(source.key.text().trim()+ ' ').prependTo(source.summary);
-
-        var summaryRange = document.createRange();
-        summaryRange.selectNodeContents(source.summary.get(0));
-        selection.addRange(summaryRange);
-        //TODO: feedback
-        document.execCommand("Copy"); 
-        source.summary.children(0).remove();
+        selection.fadeTo('fast', 0, function(){selection.fadeTo('fast',1);});
+      } else { // {key, summary}
+        text = selection.key.text() + ' ' + selection.summary.text();
+        //do some feedback
+        selection.summary.fadeTo('fast', 0, function(){selection.summary.fadeTo('fast',1);});
       }
-      selection.removeAllRanges();
+      jira.util.copyText(text);
     }
   },
 
@@ -195,8 +187,9 @@ var command = {
   },
 
   withSelection: function(cmd) {
-    var selection = jira.issues.active > -1 ? $(jira.issues[jira.issues.active]) 
-      : (jira.issue || jira.selected);
+    var selection = jira.selected 
+      || (jira.issues.active > -1 &&  $(jira.issues[jira.issues.active]))
+      || jira.issue;
     if(selection) {
       command[cmd](selection);
     }
@@ -224,6 +217,20 @@ jira.util = {
   },
   activateLink: function() {
     window.location = this.href;
+  },
+  // set selection content before copy
+  copyText: function (text) {
+    var tmp = $('<div/>', {
+        html: text.replace(/\n/g, '<br/>')
+      }).appendTo('body'),
+      selection = window.getSelection();
+
+    selection.removeAllRanges();
+    var range = document.createRange();    
+    range.setStart(tmp[0], 0);
+    range.setEnd(tmp[0], tmp[0].childNodes.length);
+    selection.addRange(range);
+    setTimeout(function() { tmp.remove(); }, 1); // otherwise refuses to copy immediately hidden stuff
   }
 };
 
