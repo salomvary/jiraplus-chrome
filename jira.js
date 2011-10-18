@@ -61,7 +61,7 @@ jira.initialize = function() {
         }
         break;
       case 67: //ctrl + c
-        if(event.ctrlKey && !(event.shiftKey || event.altKey)) {
+        if((event.ctrlKey || event.metaKey) && !(event.shiftKey || event.altKey)) {
           command.withSelection('copy');
         }
         break;
@@ -81,7 +81,7 @@ jira.initialize = function() {
         }
         break;
       case 65: //ctrl + a
-        if(event.ctrlKey && !(event.shiftKey || event.altKey)) {
+        if((event.ctrlKey || event.metaKey) && !(event.shiftKey || event.altKey)) {
           command.selectAll();
           event.preventDefault();
         }
