@@ -230,7 +230,7 @@ jira.util = {
     range.setStart(tmp[0], 0);
     range.setEnd(tmp[0], tmp[0].childNodes.length);
     selection.addRange(range);
-    setTimeout(function() { tmp.remove(); }, 1); // otherwise refuses to copy immediately hidden stuff
+    setTimeout(function() { tmp.remove(); }, 5); // otherwise refuses to copy immediately hidden stuff
   }
 };
 
