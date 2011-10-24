@@ -203,7 +203,7 @@ chrome.extension.onConnect.addListener(rpc.onConnect);
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   //check if url starts with configured url
   if(changeInfo.status == 'loading' && localStorage.jiraUrl && tab.url && tab.url.substring(0, localStorage.jiraUrl.length) == localStorage.jiraUrl) {
-    chrome.tabs.executeScript(tab.id, {file: "jquery-1.4.2.min.js"});
+    chrome.tabs.executeScript(tab.id, {file: "jquery.js"});
     chrome.tabs.executeScript(tab.id, {file: "common.js"});
     chrome.tabs.executeScript(tab.id, {file: "jira.js"});
     chrome.tabs.insertCSS(tab.id, {file: "jira.css"});
